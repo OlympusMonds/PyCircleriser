@@ -1,0 +1,131 @@
+Timer unit: 1e-06 s
+
+File: PyCircleriser.py
+Function: circlerise at line 92
+Total time: 30.3466 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    92                                           @profile
+    93                                           def circlerise(params):
+    94         1          113    113.0      0.0      progress = ProgressBar()
+    95         1            8      8.0      0.0      interval = params['interval']
+    96         1            7      7.0      0.0      maxrad = params['maxrad']
+    97         1            9      9.0      0.0      scale = params['scale']/100
+    98         1            5      5.0      0.0      overlap_factor = params['overlapfactor']
+    99                                               
+   100         1         7353   7353.0      0.0      im = getImage(params['circimg'], scale)
+   101                                               
+   102         1            7      7.0      0.0      pixels = im.load()
+   103         1          172    172.0      0.0      circles = np.zeros(im.size, int)
+   104                                           
+   105                                               """ 
+   106                                               === Algorithm ===
+   107                                               For each pixel in the original image, determine its
+   108                                               "grey" brightness, and determine an appropriate radius
+   109                                               for that.
+   110                                               Now look in the local region for other circles (local
+   111                                               is determined by the max_radius of other circles + the
+   112                                               radius of the current potential circle).
+   113                                               
+   114                                               """
+   115                                           
+   116         1            3      3.0      0.0      im_x, im_y = im.size
+   117         1            2      2.0      0.0      skips = 0
+   118                                           
+   119       401        25517     63.6      0.1      for y in progress(range(0, im_y, interval)):
+   120       400         1840      4.6      0.0          prev_rad = 0
+   121       400         1024      2.6      0.0          closeness = 0
+   122    128400       367610      2.9      1.2          for x in range(0, im_x, interval):
+   123    128000       356386      2.8      1.2              closeness += 1
+   124                                           
+   125                                                       # Determine radius
+   126    128000       409343      3.2      1.3              greyval = pixels[x, y] + 1
+   127    128000       466229      3.6      1.5              radius = int(maxrad * (greyval/256))
+   128    128000       358158      2.8      1.2              if radius == 0:
+   129      9907        25926      2.6      0.1                  radius = 1
+   130                                           
+   131                                                       # If we are still going to be inside the last circle
+   132                                                       # placed on the same X row, save time and skip.
+   133    128000       361028      2.8      1.2              if prev_rad + radius >= closeness and overlap_factor == 1.0:
+   134     19792        54571      2.8      0.2                  skips += 1
+   135     19792        52949      2.7      0.2                  continue
+   136                                                       
+   137    108208       301438      2.8      1.0              bb = [x - radius - (maxrad * overlap_factor),  # Define bounding box.
+   138    108208       305212      2.8      1.0                    y - radius - (maxrad * overlap_factor), 
+   139    108208       303350      2.8      1.0                    x + radius + (maxrad * overlap_factor), 
+   140    108208       349493      3.2      1.2                    y + radius + (maxrad * overlap_factor)]
+   141                                           
+   142                                                       
+   143    108208       309390      2.9      1.0              if bb[0] < 0:       # Ensure the bounding box is OK with 
+   144      3831        12405      3.2      0.0                  bb[0] = 0       # edges. We don't need to check the 
+   145    108208       299925      2.8      1.0              if bb[1] < 0:       # outer edges because it's OK for the
+   146      5049        15832      3.1      0.1                  bb[1] = 0       # centre to be right on the edge.
+   147    108208       302104      2.8      1.0              if bb[2] >= im_x:
+   148      7154        22496      3.1      0.1                  bb[2] = im_x - 1
+   149    108208       294781      2.7      1.0              if bb[3] >= im_y:
+   150      4955        14950      3.0      0.0                  bb[3] = im_y - 1
+   151                                                       
+   152    108208       304037      2.8      1.0              c1 = (x, y, radius)
+   153                                                       
+   154                                                       # Use bounding box and numpy to extract the local area around the
+   155                                                       # circle. Then use numpy to do a boolean operating to give a 
+   156                                                       # true/false matrix of whether circles are nearby.
+   157    108208       549896      5.1      1.8              local_area = circles[bb[0]:bb[2], bb[1]:bb[3]]
+   158    108208      1384724     12.8      4.6              circle_nearby = local_area != 0
+   159                                                       
+   160    108208       356736      3.3      1.2              nearby_circles = []
+   161                                                       """
+   162                                                       for by in range(local_area.shape[1]-1):
+   163                                                           for bx in range(local_area.shape[0]-1):
+   164                                                               if circle_nearby[bx, by]:
+   165                                                                   circle_rad = local_area[bx, by]
+   166                                                                   nearby_circles.append((bx, by, circle_rad))
+   167                                                       """
+   168    108208      1164460     10.8      3.8              coords_of_local_circles = np.where(circle_nearby)
+   169    108208      1597717     14.8      5.3              radii_of_local_cirles = np.expand_dims(local_area[circle_nearby], axis=0)  # Need the extra dim for next step
+   170    108208      2436071     22.5      8.0              nrby_cirles = np.vstack([coords_of_local_circles, radii_of_local_cirles])
+   171    108208       432357      4.0      1.4              nrby_cirles = nrby_cirles.transpose()
+   172    108208       299980      2.8      1.0              any_overlaps_here = False
+   173    108208       336386      3.1      1.1              if nrby_cirles.shape[0] == 0:
+   174         2            9      4.5      0.0                  circles[x,y] = radius
+   175         2            6      3.0      0.0                  prev_rad = radius
+   176         2            5      2.5      0.0                  closeness = 0
+   177                                                       else:
+   178    598287      2064297      3.5      6.8                  for n in nrby_cirles:
+   179    594511      3072989      5.2     10.1                      c2 = (n[0]+bb[0], n[1]+bb[1], n[2]) 
+   180    594511      8141941     13.7     26.8                      overlap = overlapping(c1, c2)        
+   181    594511      1866692      3.1      6.2                      if overlap:
+   182    104430       289998      2.8      1.0                          any_overlaps_here = True
+   183    104430       295102      2.8      1.0                          break
+   184                                                           # Look if any nearby circles overlap. If any do, don't make
+   185                                                           # a circle here.
+   186    108206       299014      2.8      1.0                  if not any_overlaps_here:               
+   187      3776        15023      4.0      0.0                      circles[x, y] = radius 
+   188      3776        10036      2.7      0.0                      prev_rad = radius
+   189      3776        10962      2.9      0.0                      closeness = 0
+   190                                                       """
+   191                                                       any_overlaps_here = False
+   192                                                       if not nearby_circles:
+   193                                                           circles[x,y] = radius
+   194                                                           prev_rad = radius
+   195                                                           closeness = 0
+   196                                                       else:
+   197                                                           for n in nearby_circles:
+   198                                                               c2 = (n[0]+bb[0], n[1]+bb[1], n[2])  
+   199                                                               overlap = overlapping(c1, c2)        
+   200                                                               if overlap:
+   201                                                                   any_overlaps_here = True
+   202                                                                   break
+   203                                                           # Look if any nearby circles overlap. If any do, don't make
+   204                                                           # a circle here.
+   205                                                           if not any_overlaps_here:               
+   206                                                               circles[x, y] = radius 
+   207                                                               prev_rad = radius
+   208                                                               closeness = 0
+   209                                                       """
+   210                                           
+   211         1       398406 398406.0      1.3      render(circles, "", params, im.size)
+   212                                           
+   213         1           85     85.0      0.0      print skips
+
