@@ -12,10 +12,10 @@ Dependencies
 Examples
 ========
 A random face from Google images:
-![face](https://github.com/OlympusMonds/PyCircleriser/blob/master/images/face-2.jpg)
+![face](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/images/face-2.jpg)
 to this:
-![circle face](https://github.com/OlympusMonds/PyCircleriser/blob/master/images/face-2.jpg)
+![circle face](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/face-2.jpg)
 
-![monet](https://github.com/OlympusMonds/PyCircleriser/blob/master/images/monet-starry.jpg)
+![monet](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/images/monet-starry.jpg)
 to this:
-![monet](https://github.com/OlympusMonds/PyCircleriser/blob/master/outputs/monet-starry.jpg)
+![monet](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/monet-starry.jpg)
