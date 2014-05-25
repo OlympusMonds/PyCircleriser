@@ -37,7 +37,7 @@ LOGGING = False
 
 def log(message):
     global LOGGING
-    if LOGGING is True:
+    if LOGGING:
         print message
         sys.stdout.flush()
 
@@ -128,7 +128,7 @@ def circlerise(params):
     im_x, im_y = im.size
     skips = 0
 
-    if LOGGING is True and HAVE_PYPRIND is True:
+    if LOGGING  and HAVE_PYPRIND :
         progress = pyprind.ProgBar(im_y, stream=1)
 
     for y in range(0, im_y, interval):
