@@ -42,18 +42,20 @@ def log(message):
         sys.stdout.flush()
 
 
-def getImage(image, scale=1, grey=True):
+def getImage(image, scale=1.0, grey=True):
     try:
         log("Opening image: %s" % image)
         im = Image.open(image)
-        if scale != 1:
-            im = im.resize(tuple(i * scale for i in im.size))
-        if grey:
-            im = im.convert('L')
     except Exception as e:
-        error_msg = ("Image file you provided:\n{image}\n does not exist! Here's what the computer"
+        error_msg = ("Image file you provided:\n{image}\ndoes not exist! Here's what the computer"
                      "says:\n{exception}".format(image=image, exception=e))
         sys.exit(error_msg)
+
+    if scale != 1.0:
+        im = im.resize(tuple(i * scale for i in im.size))
+
+    if grey:
+        im = im.convert('L')
     return im
 
 
@@ -83,7 +85,6 @@ def render(circles, path, params, imsize):
     if params['nooutline']:
         outline = None
     
-    print bgcolour
     final = Image.new('RGB', imsize, bgcolour)
     draw = ImageDraw.Draw(final)
 
@@ -107,7 +108,7 @@ def circlerise(params):
 
     interval = params['interval']
     maxrad = params['maxrad']
-    scale = params['scale']/100
+    scale = params['scale']
     
     im = getImage(params['circimg'], scale)
     
@@ -137,8 +138,8 @@ def circlerise(params):
             closeness += 1
 
             # Determine radius
-            greyval = pixels[x, y] + 1
-            radius = int(maxrad * (greyval/256))
+            greyval = pixels[x, y]
+            radius = int(maxrad * (greyval/255))
             if radius == 0:
                 radius = 1
 
