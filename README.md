@@ -29,14 +29,17 @@ to this:
 ![monet](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/monet-starry.jpg)
 
 Using the command:
+
 ```python PyCircleriser.py --circimg images/monet-starry.jpg --outimg outputs/monet-starry.jpg --log```
 
 There are also a few modifiers you can use, for example:
+
 ```python PyCircleriser.py --circimg images/monet-starry.jpg --outimg outputs/monet-starry_flags.jpg --bgimg images/monet-starry.jpg --bgcolour 0 --log --nooutline```
 
 ![monet](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/monet-starry_flags.jpg)
 
 And another example, with a different background colouring, and scaling (which often can improve the look of an output):
+
 ```python PyCircleriser.py --circimg images/face-2.jpg --outimg outputs/face-2-colour.jpg --log --bgimg images/union-jack.png --scale 2```
 
 ![circle face](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/face-2-colour.jpg)
