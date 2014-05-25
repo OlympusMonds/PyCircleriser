@@ -19,11 +19,22 @@ to this:
 
 ![circle face](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/face-2.jpg)
 
+Using the command:
+    python PyCircleriser.py --circimg images/face-2.jpg --outimg outputs/face-2.jpg --log
+
 ![monet](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/images/monet-starry.jpg)
 
 to this:
 
 ![monet](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/monet-starry.jpg)
+
+Using the command:
+    python PyCircleriser.py --circimg images/monet-starry.jpg --outimg outputs/monet-starry.jpg --log
+
+There are also a few modifiers you can use, for example:
+    python PyCircleriser.py --circimg images/monet-starry.jpg --outimg outputs/monet-starry_flags.jpg --bgimg images/monet-starry.jpg --bgcolour 0 --log --nooutline
+
+![monet](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/monet-starry_flags.jpg)
 
 
 To do

@@ -29,9 +29,9 @@ from math import sqrt
 
 HAVE_PYPRIND = True
 try:
-	import pyprind
+    import pyprind
 except ImportError:
-	HAVE_PYPRIND = False
+    HAVE_PYPRIND = False
 
 LOGGING = False
 
@@ -73,8 +73,18 @@ def render(circles, path, params, imsize):
         bg = getImage(params['bgimg'], grey=False)
         bgim = bg.resize(imsize)
         bgpix = bgim.load()
+
+    col = params['bgcolour']
+    col = 255 if col > 255 else col
+    col = 0 if col < 0 else col
+    bgcolour = (col, col, col)
+
+    outline = (0, 0, 0)
+    if params['nooutline']:
+        outline = None
     
-    final = Image.new('RGB', imsize, "white")
+    print bgcolour
+    final = Image.new('RGB', imsize, bgcolour)
     draw = ImageDraw.Draw(final)
 
     im_x, im_y = imsize
@@ -86,19 +96,18 @@ def render(circles, path, params, imsize):
                 bb = (x - circle_radius, y - circle_radius, 
                       x + circle_radius, y + circle_radius)
                 fill = bgpix[x, y] if params['bgimg'] else (255, 255, 255)
-                draw.ellipse(bb, fill=fill, outline=(0, 0, 0))
+                draw.ellipse(bb, fill=fill, outline=outline)
     del draw
     final.save(params['outimg'])
 
 
 def circlerise(params):
-	global LOGGING
+    global LOGGING
     global HAVE_PYPRIND
 
     interval = params['interval']
     maxrad = params['maxrad']
     scale = params['scale']/100
-    overlap_factor = params['overlapfactor']
     
     im = getImage(params['circimg'], scale)
     
@@ -119,7 +128,7 @@ def circlerise(params):
     skips = 0
 
     if LOGGING is True and HAVE_PYPRIND is True:
-    	progress = pyprind.ProgBar(im_y, stream=1)
+        progress = pyprind.ProgBar(im_y, stream=1)
 
     for y in range(0, im_y, interval):
         prev_rad = 0
@@ -135,14 +144,14 @@ def circlerise(params):
 
             # If we are still going to be inside the last circle
             # placed on the same X row, save time and skip.
-            if prev_rad + radius >= closeness and overlap_factor == 1.0:
+            if prev_rad + radius >= closeness:
                 skips += 1
                 continue
             
-            bb = [x - radius - (maxrad * overlap_factor),  # Define bounding box.
-                  y - radius - (maxrad * overlap_factor), 
-                  x + radius + (maxrad * overlap_factor), 
-                  y + radius + (maxrad * overlap_factor)]
+            bb = [x - radius - maxrad,  # Define bounding box.
+                  y - radius - maxrad, 
+                  x + radius + maxrad, 
+                  y + radius + maxrad]
 
             
             if bb[0] < 0:       # Ensure the bounding box is OK with 
@@ -186,7 +195,7 @@ def circlerise(params):
                     prev_rad = radius
                     closeness = 0
         if LOGGING is True and HAVE_PYPRIND is True:
-        	progress.update()
+            progress.update()
 
     log("Avoided {skips} calculations".format(skips=skips))
 
@@ -217,8 +226,11 @@ def main(argv=None):
     addarg("--scale", type=int, default=100,
             help="Percent to scale up the circimg (sometimes makes it look better).")
 
-    addarg("--overlapfactor", type=float, default=1,
-            help="< 1 means circles can overlap each other, > 1 means they space out.")
+    addarg("--bgcolour", type=int, default=255,
+            help="Grey-scale val from 0 to 255")
+
+    addarg("--nooutline", action='store_true', default=False,
+            help="When specified, no outline will be drawn on circles.")
 
     addarg("--log", action='store_true', default=False,
             help="Write progress to stdout.")

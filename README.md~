@@ -1,0 +1,14 @@
+PyCircleriser
+=============
+
+Turns images into clusters of circles, with the radius determined by pixel brightness.
+
+Dependencies
+============
+ - PIL
+ - Numpy
+ - ProgressBar
+
+Examples
+========
+![alt tag](https://raw.github.com/OlympusMonds/PyCircleriser/branch/path/to/img.png)
