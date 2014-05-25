@@ -25,12 +25,14 @@ import sys
 import Image, ImageDraw
 import argparse
 import numpy as np
-from progressbar import ProgressBar
 from math import sqrt
 
-import line_profiler
+HAVE_PYPRIND = True
+try:
+	import pyprind
+except ImportError:
+	HAVE_PYPRIND = False
 
-global LOGGING
 LOGGING = False
 
 def log(message):
@@ -90,7 +92,9 @@ def render(circles, path, params, imsize):
 
 
 def circlerise(params):
-    progress = ProgressBar()
+	global LOGGING
+    global HAVE_PYPRIND
+
     interval = params['interval']
     maxrad = params['maxrad']
     scale = params['scale']/100
@@ -109,13 +113,15 @@ def circlerise(params):
     Now look in the local region for other circles (local
     is determined by the max_radius of other circles + the
     radius of the current potential circle).
-    
     """
 
     im_x, im_y = im.size
     skips = 0
 
-    for y in progress(range(0, im_y, interval)):
+    if LOGGING is True and HAVE_PYPRIND is True:
+    	progress = pyprind.ProgBar(im_y, stream=1)
+
+    for y in range(0, im_y, interval):
         prev_rad = 0
         closeness = 0
         for x in range(0, im_x, interval):
@@ -179,10 +185,13 @@ def circlerise(params):
                     circles[x, y] = radius 
                     prev_rad = radius
                     closeness = 0
+        if LOGGING is True and HAVE_PYPRIND is True:
+        	progress.update()
+
+    log("Avoided {skips} calculations".format(skips=skips))
 
     render(circles, "", params, im.size)
 
-    print skips
 
 
 def main(argv=None):    
@@ -211,20 +220,18 @@ def main(argv=None):
     addarg("--overlapfactor", type=float, default=1,
             help="< 1 means circles can overlap each other, > 1 means they space out.")
 
-    addarg("--log", action='store_true', default=True,
+    addarg("--log", action='store_true', default=False,
             help="Write progress to stdout.")
     
     parsed_args = parser.parse_args()
     params = dict(parsed_args.__dict__)
 
+    global LOGGING
     if params["log"] is True:
-        global LOGGING
         LOGGING = True
 
     log("Begin circlerising...")
     circlerise(params)
-    
-    
 
 
 if __name__ == "__main__":

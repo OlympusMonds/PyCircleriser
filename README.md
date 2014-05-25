@@ -30,5 +30,3 @@ To do
 =====
  - Add option to render progressively (to make a gif or whatnot)
  - General speed ups (see lineprofile.txt)
- - Log option does not suppress progress bar (maybe just remove logging?)
- - ProgressBar is good, but makes the code somewhat unlibrary-able (read up on ProgressBar - maybe it has options?)
