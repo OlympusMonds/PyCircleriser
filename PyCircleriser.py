@@ -89,7 +89,6 @@ def render(circles, path, params, imsize):
     final.save(params['outimg'])
 
 
-#@profile
 def circlerise(params):
     progress = ProgressBar()
     interval = params['interval']
@@ -156,19 +155,12 @@ def circlerise(params):
             # true/false matrix of whether circles are nearby.
             local_area = circles[bb[0]:bb[2], bb[1]:bb[3]]
             circle_nearby = local_area != 0
-            
-            nearby_circles = []
-            """
-            for by in range(local_area.shape[1]-1):
-                for bx in range(local_area.shape[0]-1):
-                    if circle_nearby[bx, by]:
-                        circle_rad = local_area[bx, by]
-                        nearby_circles.append((bx, by, circle_rad))
-            """
+           
             coords_of_local_circles = np.where(circle_nearby)
             radii_of_local_cirles = np.expand_dims(local_area[circle_nearby], axis=0)  # Need the extra dim for next step
             nrby_cirles = np.vstack([coords_of_local_circles, radii_of_local_cirles])
             nrby_cirles = nrby_cirles.transpose()
+
             any_overlaps_here = False
             if nrby_cirles.shape[0] == 0:
                 circles[x,y] = radius
@@ -187,26 +179,6 @@ def circlerise(params):
                     circles[x, y] = radius 
                     prev_rad = radius
                     closeness = 0
-            """
-            any_overlaps_here = False
-            if not nearby_circles:
-                circles[x,y] = radius
-                prev_rad = radius
-                closeness = 0
-            else:
-                for n in nearby_circles:
-                    c2 = (n[0]+bb[0], n[1]+bb[1], n[2])  
-                    overlap = overlapping(c1, c2)        
-                    if overlap:
-                        any_overlaps_here = True
-                        break
-                # Look if any nearby circles overlap. If any do, don't make
-                # a circle here.
-                if not any_overlaps_here:               
-                    circles[x, y] = radius 
-                    prev_rad = radius
-                    closeness = 0
-            """
 
     render(circles, "", params, im.size)
 
