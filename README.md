@@ -49,3 +49,7 @@ To do
 =====
  - Add option to render progressively (to make a gif or whatnot)
  - General speed ups (see lineprofile.txt)
+
+Help
+====
+I'm no noob, but I'm hardly a pro (and I never get code reviews), so if you find some code odd or inefficient, please let me know or submit a pull request. I would be super appreciative.
