@@ -7,7 +7,7 @@ Dependencies
 ============
  - PIL
  - Numpy
- - ProgressBar
+ - PyPrind (optional)
 
 Examples
 ========
