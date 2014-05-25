@@ -20,7 +20,8 @@ to this:
 ![circle face](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/outputs/face-2.jpg)
 
 Using the command:
-    python PyCircleriser.py --circimg images/face-2.jpg --outimg outputs/face-2.jpg --log
+
+```python PyCircleriser.py --circimg images/face-2.jpg --outimg outputs/face-2.jpg --log```
 
 ![monet](https://raw.githubusercontent.com/OlympusMonds/PyCircleriser/master/images/monet-starry.jpg)
 
