@@ -52,7 +52,7 @@ def getImage(image, scale=1.0, grey=True):
         sys.exit(error_msg)
 
     if scale != 1.0:
-        im = im.resize(tuple(i * scale for i in im.size))
+        im = im.resize(tuple(int(i * scale) for i in im.size))
 
     if grey:
         im = im.convert('L')
@@ -123,6 +123,10 @@ def circlerise(params):
     Now look in the local region for other circles (local
     is determined by the max_radius of other circles + the
     radius of the current potential circle).
+    If there is some circles nearby, check to see if the
+    new circle will overlap with it or not. If all nearby
+    circles won't overlap, then record the radius in a 2D
+    array that corresponds to the image.
     """
 
     im_x, im_y = im.size
@@ -224,7 +228,7 @@ def main(argv=None):
     addarg("--maxrad", type=int, default=10,
             help="Max radius of a circle (corresponds to a white pixel)")
     
-    addarg("--scale", type=int, default=100,
+    addarg("--scale", type=float, default=1,
             help="Percent to scale up the circimg (sometimes makes it look better).")
 
     addarg("--bgcolour", type=int, default=255,
